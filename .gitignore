@@ -13,6 +13,10 @@ release
 dist-ssr
 *.local
 
+# Yarn Berry
+.yarn/cache
+.yarn/install-state.gz
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
