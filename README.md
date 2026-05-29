@@ -1,52 +1,26 @@
-# Vue 3 + Vite + CRXJS
+# extra-pr-buttons-for-github
 
-This template helps you quickly start developing Chrome extensions with Vue 3, TypeScript and Vite. It includes the CRXJS Vite plugin for seamless Chrome extension development.
+Chrome extension that adds a one-click `#skipreview #automerge` button to GitHub PR comment forms.
 
-## Features
+![Screenshot](docs/screenshot.jpg)
 
-- Vue 3 with `<script setup>` syntax
-- TypeScript support
-- Vite build tool
-- CRXJS Vite plugin integration
-- Chrome extension manifest configuration
-
-## Quick Start
-
-1. Install dependencies:
+## Install
 
 ```bash
-npm install
+git clone https://github.com/guyca/extra-pr-buttons-for-github.git
+cd extra-pr-buttons-for-github
+yarn install && yarn build
 ```
 
-2. Start development server:
+Then go to `chrome://extensions/`, enable **Developer mode**, click **Load unpacked**, and select the `dist` folder.
+
+## How it works
+
+Detects GitHub comment forms and injects a button next to the submit button. Clicking it fills the textarea with `#skipreview #automerge` and submits. The button is disabled if you've already typed something.
+
+## Dev
 
 ```bash
-npm run dev
+yarn dev    # dev server with HMR
+yarn build  # production build → dist/
 ```
-
-3. Open Chrome and navigate to `chrome://extensions/`, enable "Developer mode", and load the unpacked extension from the `dist` directory.
-
-4. Build for production:
-
-```bash
-npm run build
-```
-
-## Project Structure
-
-- `src/popup/` - Extension popup UI
-- `src/content/` - Content scripts
-- `manifest.config.ts` - Chrome extension manifest configuration
-
-## Documentation
-
-- [Vue 3 Documentation](https://vuejs.org/)
-- [Vite Documentation](https://vitejs.dev/)
-- [CRXJS Documentation](https://crxjs.dev/vite-plugin)
-
-## Chrome Extension Development Notes
-
-- Use `manifest.config.ts` to configure your extension
-- The CRXJS plugin automatically handles manifest generation
-- Content scripts should be placed in `src/content/`
-- Popup UI should be placed in `src/popup/`
