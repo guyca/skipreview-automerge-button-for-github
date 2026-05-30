@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_URL="https://github.com/guyca/extra-pr-buttons-for-github.git"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/extra-pr-buttons-for-github}"
+
+if ! command -v yarn &>/dev/null; then
+  echo "Error: yarn not found. Install it first: https://yarnpkg.com/getting-started/install" >&2
+  exit 1
+fi
+
+if [ -d "$INSTALL_DIR" ]; then
+  echo "Error: $INSTALL_DIR already exists. Remove it or set INSTALL_DIR to a different path." >&2
+  exit 1
+fi
+
+echo "Cloning into $INSTALL_DIR..."
+git clone "$REPO_URL" "$INSTALL_DIR"
+
+echo "Building..."
+cd "$INSTALL_DIR"
+yarn install && yarn build
+
+DIST="$INSTALL_DIR/dist"
+echo ""
+echo "Done! Load the extension in Chrome:"
+echo "  1. Open chrome://extensions/"
+echo "  2. Enable Developer mode (top-right toggle)"
+echo "  3. Click 'Load unpacked' and select:"
+echo "     $DIST"
