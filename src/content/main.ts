@@ -1,6 +1,30 @@
 const SKIP_TEXT = '#skipreview #automerge'
 const INJECTED_ATTR = 'data-skip-review-btn'
 
+function isVisible(el: HTMLElement): boolean {
+  return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)
+}
+
+function findUpdateBranchBtn(): HTMLButtonElement | null {
+  return Array.from(document.querySelectorAll<HTMLButtonElement>('button'))
+    .find(b => b.textContent?.trim() === 'Update branch' && isVisible(b)) ?? null
+}
+
+function waitForUpdateBranch(timeoutMs = 10_000) {
+  const existing = findUpdateBranchBtn()
+  if (existing) { existing.click(); return }
+
+  const obs = new MutationObserver(() => {
+    const btn = findUpdateBranchBtn()
+    if (!btn) return
+    obs.disconnect()
+    clearTimeout(timer)
+    btn.click()
+  })
+  obs.observe(document.body, { childList: true, subtree: true })
+  const timer = setTimeout(() => obs.disconnect(), timeoutMs)
+}
+
 function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElement) {
   const actionArea = submitBtn.parentElement
   if (!actionArea || actionArea.querySelector(`[${INJECTED_ATTR}]`)) return
@@ -21,6 +45,7 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
     textarea.dispatchEvent(new Event('input', { bubbles: true }))
     textarea.dispatchEvent(new Event('change', { bubbles: true }))
     submitBtn.click()
+    waitForUpdateBranch()
   })
 
   btn.style.marginRight = '4px'
