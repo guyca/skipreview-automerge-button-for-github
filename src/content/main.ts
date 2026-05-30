@@ -27,7 +27,15 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
   actionArea.insertBefore(btn, submitBtn)
 }
 
+function isPrMerged(): boolean {
+  return !!document.querySelector('[data-status="pullMerged"]')
+}
+
 function tryInject() {
+  if (isPrMerged()) {
+    document.querySelectorAll(`[${INJECTED_ATTR}]`).forEach(el => el.remove())
+    return
+  }
   Array.from(document.querySelectorAll('form')).forEach((form) => {
     const textarea = form.querySelector('textarea.comment-form-textarea, textarea.js-comment-field') as HTMLTextAreaElement | null
     if (!textarea) return
