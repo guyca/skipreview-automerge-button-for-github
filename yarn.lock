@@ -704,23 +704,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"extra-pr-buttons-for-github@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "extra-pr-buttons-for-github@workspace:."
-  dependencies:
-    "@crxjs/vite-plugin": "npm:^2.4.0"
-    "@types/chrome": "npm:^0.1.37"
-    "@types/node": "npm:^25.5.0"
-    "@vitejs/plugin-vue": "npm:^6.0.5"
-    "@vue/tsconfig": "npm:^0.9.0"
-    typescript: "npm:~5.9.3"
-    vite: "npm:^8.0.0"
-    vite-plugin-zip-pack: "npm:^1.2.4"
-    vue: "npm:^3.5.30"
-    vue-tsc: "npm:^3.2.5"
-  languageName: unknown
-  linkType: soft
-
 "fast-glob@npm:^3.2.11":
   version: 3.3.3
   resolution: "fast-glob@npm:3.3.3::__archiveUrl=https%3A%2F%2Fnpm.dev.wixpress.com%2Fapi%2Fnpm%2Fnpm-repos%2Ffast-glob%2F-%2Ffast-glob-3.3.3.tgz"
@@ -1363,6 +1346,23 @@ __metadata:
   checksum: 10/76e3f5d7f4b581b6100ff819761f04a984fa3f3990e72a6554b57188ded53efce2d3d6c0932c10f810b7c59414f85e2ab3c11521877d1dea1ce0b56dc906f485
   languageName: node
   linkType: hard
+
+"skipreview-automerge-button-for-github@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "skipreview-automerge-button-for-github@workspace:."
+  dependencies:
+    "@crxjs/vite-plugin": "npm:^2.4.0"
+    "@types/chrome": "npm:^0.1.37"
+    "@types/node": "npm:^25.5.0"
+    "@vitejs/plugin-vue": "npm:^6.0.5"
+    "@vue/tsconfig": "npm:^0.9.0"
+    typescript: "npm:~5.9.3"
+    vite: "npm:^8.0.0"
+    vite-plugin-zip-pack: "npm:^1.2.4"
+    vue: "npm:^3.5.30"
+    vue-tsc: "npm:^3.2.5"
+  languageName: unknown
+  linkType: soft
 
 "source-map-js@npm:^1.2.1":
   version: 1.2.1

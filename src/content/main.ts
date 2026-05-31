@@ -53,7 +53,9 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
 }
 
 function isPrInactive(): boolean {
-  return !!document.querySelector('[data-status="pullMerged"], [data-status="pullClosed"]')
+  if (document.querySelector('[data-status="pullMerged"], [data-status="pullClosed"]')) return true
+  const heading = document.querySelector('[data-testid="mergebox-border-container"] h3')
+  return !!(heading?.textContent?.includes('successfully merged'))
 }
 
 function tryInject() {
