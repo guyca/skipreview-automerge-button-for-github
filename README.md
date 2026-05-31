@@ -1,4 +1,4 @@
-# extra-pr-buttons-for-github
+# skipreview-automerge-button-for-github
 
 Chrome extension that adds a one-click `#skipreview #automerge` button to GitHub PR comment forms.
 
@@ -9,7 +9,7 @@ Chrome extension that adds a one-click `#skipreview #automerge` button to GitHub
 Run the install script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/guyca/extra-pr-buttons-for-github/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/guyca/skipreview-automerge-button-for-github/master/install.sh | bash
 ```
 
 Then follow the printed instructions to load the `dist/` folder in Chrome.
@@ -18,8 +18,8 @@ Then follow the printed instructions to load the `dist/` folder in Chrome.
 <summary>Manual installation</summary>
 
 ```bash
-git clone https://github.com/guyca/extra-pr-buttons-for-github.git
-cd extra-pr-buttons-for-github
+git clone https://github.com/guyca/skipreview-automerge-button-for-github.git
+cd skipreview-automerge-button-for-github
 yarn install && yarn build
 ```
 

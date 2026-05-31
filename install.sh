@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="https://github.com/guyca/extra-pr-buttons-for-github.git"
-INSTALL_DIR="${INSTALL_DIR:-$HOME/extra-pr-buttons-for-github}"
+REPO_URL="https://github.com/guyca/skipreview-automerge-button-for-github.git"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/skipreview-automerge-button-for-github}"
 
 if ! command -v yarn &>/dev/null; then
   echo "Error: yarn not found. Install it first: https://yarnpkg.com/getting-started/install" >&2
