@@ -14,6 +14,13 @@ if [ -d "$INSTALL_DIR" ]; then
   exit 1
 fi
 
+echo "This will clone the repo into: $INSTALL_DIR"
+read -r -p "Continue? [y/N] " confirm </dev/tty
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+  echo "Aborted."
+  exit 0
+fi
+
 echo "Cloning into $INSTALL_DIR..."
 git clone "$REPO_URL" "$INSTALL_DIR"
 
