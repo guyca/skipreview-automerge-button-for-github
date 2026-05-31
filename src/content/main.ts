@@ -52,12 +52,12 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
   actionArea.insertBefore(btn, submitBtn)
 }
 
-function isPrMerged(): boolean {
-  return !!document.querySelector('[data-status="pullMerged"]')
+function isPrInactive(): boolean {
+  return !!document.querySelector('[data-status="pullMerged"], [data-status="pullClosed"]')
 }
 
 function tryInject() {
-  if (isPrMerged()) {
+  if (isPrInactive()) {
     document.querySelectorAll(`[${INJECTED_ATTR}]`).forEach(el => el.remove())
     return
   }
