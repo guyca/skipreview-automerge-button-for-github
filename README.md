@@ -6,6 +6,11 @@ Chrome extension that adds a one-click `#skipreview #automerge` button to GitHub
 
 ## Install
 
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/skip-review-auto-merge-bu/ijgbficjenlkjebcfaccdamhhapgbdni).
+
+<details>
+<summary>Install from source</summary>
+
 Run the install script:
 
 ```bash
@@ -14,8 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/guyca/skipreview-automerge-button-f
 
 Then follow the printed instructions to load the `dist/` folder in Chrome.
 
-<details>
-<summary>Manual installation</summary>
+Or manually:
 
 ```bash
 git clone https://github.com/guyca/skipreview-automerge-button-for-github.git
