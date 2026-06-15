@@ -64,6 +64,7 @@ function tryInject() {
     return
   }
   Array.from(document.querySelectorAll('form')).forEach((form) => {
+    if (!form.matches('#new_comment_form, .js-new-comment-form')) return
     const textarea = form.querySelector('textarea.comment-form-textarea, textarea.js-comment-field') as HTMLTextAreaElement | null
     if (!textarea) return
     const submitBtn = Array.from(form.querySelectorAll('button[type="submit"]'))
