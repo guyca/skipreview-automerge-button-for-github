@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Options — SkipReview Automerge</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 560px; margin: 40px auto; padding: 0 20px; color: #24292f; line-height: 1.6; }
+    h1 { font-size: 1.3rem; margin-bottom: 24px; }
+    h2 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; color: #57606a; margin: 24px 0 8px; }
+    label { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+    .add-row { display: flex; gap: 8px; margin-top: 8px; }
+    .add-row input { flex: 1; padding: 5px 10px; font-size: 0.9rem; border: 1px solid #d0d7de; border-radius: 6px; outline: none; }
+    .add-row input:focus { border-color: #0969da; box-shadow: 0 0 0 3px rgba(9,105,218,.15); }
+    button { padding: 5px 12px; border: 1px solid #d0d7de; border-radius: 6px; cursor: pointer; background: #f6f8fa; font-size: 0.9rem; }
+    button:hover { background: #eaeef2; }
+    ul { list-style: none; padding: 0; margin: 8px 0 0; }
+    li { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #eaeef2; font-size: 0.9rem; font-family: monospace; }
+    li:last-child { border-bottom: none; }
+    li button { font-size: 0.8rem; padding: 2px 8px; color: #cf222e; border-color: #ffc1c0; background: #fff8f8; }
+    li button:hover { background: #ffebe9; }
+    #status { color: #1a7f37; font-size: 0.85rem; margin-top: 16px; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>SkipReview Automerge — Options</h1>
+
+  <h2>Update Branch</h2>
+  <label>
+    <input type="checkbox" id="updateBranchEnabled">
+    Auto-click "Update branch" after submitting
+  </label>
+
+  <h2>Excluded Repositories</h2>
+  <p style="margin:0 0 6px;font-size:.9rem;color:#57606a">Repos listed here are never auto-updated, even when the toggle above is on.</p>
+  <div class="add-row">
+    <input type="text" id="repoInput" placeholder="owner/repo">
+    <button id="addRepo">Add</button>
+  </div>
+  <ul id="repoList"></ul>
+
+  <div id="status"></div>
+
+  <script type="module" src="./options.ts"></script>
+</body>
+</html>

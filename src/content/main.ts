@@ -1,6 +1,26 @@
 const SKIP_TEXT = '#skipreview #automerge'
 const INJECTED_ATTR = 'data-skip-review-btn'
 
+interface Settings { updateBranchEnabled: boolean; excludedRepos: string[] }
+const DEFAULT_SETTINGS: Settings = { updateBranchEnabled: true, excludedRepos: [] }
+let cachedSettings: Settings = { ...DEFAULT_SETTINGS }
+
+async function loadSettings() {
+  const raw = await chrome.storage.sync.get(DEFAULT_SETTINGS as unknown as Record<string, unknown>)
+  cachedSettings = raw as unknown as Settings
+}
+
+function getCurrentRepo(): string {
+  const parts = window.location.pathname.split('/').filter(Boolean)
+  return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : ''
+}
+
+function shouldAutoUpdateBranch(): boolean {
+  if (!cachedSettings.updateBranchEnabled) return false
+  const repo = getCurrentRepo()
+  return !repo || !cachedSettings.excludedRepos.includes(repo)
+}
+
 function isVisible(el: HTMLElement): boolean {
   return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)
 }
@@ -45,7 +65,7 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
     textarea.dispatchEvent(new Event('input', { bubbles: true }))
     textarea.dispatchEvent(new Event('change', { bubbles: true }))
     submitBtn.click()
-    waitForUpdateBranch()
+    if (shouldAutoUpdateBranch()) waitForUpdateBranch()
   })
 
   btn.style.marginRight = '4px'
@@ -74,6 +94,8 @@ function tryInject() {
   })
 }
 
+loadSettings()
+document.addEventListener('turbo:load', loadSettings)
 const observer = new MutationObserver(tryInject)
 observer.observe(document.body, { childList: true, subtree: true })
 document.addEventListener('turbo:load', tryInject)
