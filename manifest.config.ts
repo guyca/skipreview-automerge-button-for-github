@@ -14,6 +14,8 @@ export default defineManifest({
       48: 'public/logo.png',
     },
   },
+  permissions: ['storage'],
+  options_page: 'src/options/options.html',
   content_scripts: [{
     js: ['src/content/main.ts'],
     matches: ['https://github.com/*'],
