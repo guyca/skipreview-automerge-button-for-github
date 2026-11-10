@@ -49,10 +49,23 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
   const actionArea = submitBtn.parentElement
   if (!actionArea || actionArea.querySelector(`[${INJECTED_ATTR}]`)) return
 
-  const btn = document.createElement('button')
-  btn.type = 'button'
-  btn.textContent = SKIP_TEXT
-  btn.className = submitBtn.className
+  const legacy = !!textarea.closest('#new_comment_form, .js-new-comment-form')
+  let btn: HTMLButtonElement
+  if (legacy) {
+    btn = document.createElement('button')
+    btn.type = 'button'
+    btn.textContent = SKIP_TEXT
+    btn.className = submitBtn.className
+  } else {
+    // Redesigned layout: clone so attribute-driven styling (e.g. data-variant) carries over
+    btn = submitBtn.cloneNode(false) as HTMLButtonElement
+    btn.removeAttribute('id')
+    btn.removeAttribute('aria-disabled')
+    btn.removeAttribute('data-inactive')
+    btn.removeAttribute('data-dd-action-name')
+    btn.type = 'button'
+    btn.textContent = SKIP_TEXT
+  }
   btn.setAttribute(INJECTED_ATTR, 'true')
 
   const sync = () => { btn.disabled = textarea.value.trim().length > 0 }
@@ -64,7 +77,9 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
     setter?.call(textarea, SKIP_TEXT)
     textarea.dispatchEvent(new Event('input', { bubbles: true }))
     textarea.dispatchEvent(new Event('change', { bubbles: true }))
-    submitBtn.click()
+    if (legacy) submitBtn.click()
+    // Redesigned layout: let React re-render so the submit button is enabled first
+    else requestAnimationFrame(() => submitBtn.click())
     if (shouldAutoUpdateBranch()) waitForUpdateBranch()
   })
 
@@ -75,7 +90,40 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
 function isPrInactive(): boolean {
   if (document.querySelector('[data-status="pullMerged"], [data-status="pullClosed"]')) return true
   const heading = document.querySelector('[data-testid="mergebox-border-container"] h3')
-  return !!(heading?.textContent?.includes('successfully merged'))
+  if (heading?.textContent?.includes('successfully merged')) return true
+  // Redesigned layout: merged PRs show Revert / Restore branch buttons
+  return Array.from(document.querySelectorAll('button'))
+    .some(b => ['Revert', 'Restore branch'].includes(b.textContent?.trim() ?? '') && isVisible(b))
+}
+
+const LEGACY_FORM = '#new_comment_form, .js-new-comment-form'
+const LEGACY_TEXTAREA = 'textarea.comment-form-textarea, textarea.js-comment-field'
+const NEW_TEXTAREA = 'textarea[placeholder="Leave a comment"]'
+
+function injectLegacy() {
+  Array.from(document.querySelectorAll('form')).forEach((form) => {
+    if (!form.matches(LEGACY_FORM)) return
+    const textarea = form.querySelector(LEGACY_TEXTAREA) as HTMLTextAreaElement | null
+    if (!textarea) return
+    const submitBtn = Array.from(form.querySelectorAll('button[type="submit"]'))
+      .find(b => b.textContent?.trim() === 'Comment') as HTMLButtonElement | undefined
+    if (!submitBtn) return
+    injectButton(textarea, submitBtn)
+  })
+}
+
+// Redesigned layout: nearest ancestor of the textarea containing exactly one "Comment" button
+function injectRedesigned() {
+  document.querySelectorAll<HTMLTextAreaElement>(NEW_TEXTAREA).forEach((textarea) => {
+    if (textarea.matches(LEGACY_TEXTAREA) || textarea.closest(LEGACY_FORM)) return
+    if (textarea.closest('.js-inline-comment-form, .review-thread-reply, [data-testid*="review-thread"]')) return
+    let el: HTMLElement | null = textarea.parentElement
+    for (let i = 0; el && i < 10; i++, el = el.parentElement) {
+      const matches = Array.from(el.querySelectorAll('button')).filter(b => b.textContent?.trim() === 'Comment')
+      if (matches.length > 1) return
+      if (matches.length === 1) { injectButton(textarea, matches[0]); return }
+    }
+  })
 }
 
 function tryInject() {
@@ -83,15 +131,8 @@ function tryInject() {
     document.querySelectorAll(`[${INJECTED_ATTR}]`).forEach(el => el.remove())
     return
   }
-  Array.from(document.querySelectorAll('form')).forEach((form) => {
-    if (!form.matches('#new_comment_form, .js-new-comment-form')) return
-    const textarea = form.querySelector('textarea.comment-form-textarea, textarea.js-comment-field') as HTMLTextAreaElement | null
-    if (!textarea) return
-    const submitBtn = Array.from(form.querySelectorAll('button[type="submit"]'))
-      .find(b => b.textContent?.trim() === 'Comment') as HTMLButtonElement | undefined
-    if (!submitBtn) return
-    injectButton(textarea, submitBtn)
-  })
+  injectLegacy()
+  injectRedesigned()
 }
 
 loadSettings()
