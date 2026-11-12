@@ -45,7 +45,23 @@ function waitForUpdateBranch(timeoutMs = 10_000) {
   const timer = setTimeout(() => obs.disconnect(), timeoutMs)
 }
 
-function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElement) {
+function isSubmittable(b: HTMLButtonElement | null): b is HTMLButtonElement {
+  return !!b && b.isConnected && !b.disabled &&
+    b.getAttribute('aria-disabled') !== 'true' && !b.hasAttribute('data-inactive')
+}
+
+// Redesigned layout re-renders the submit button after the value changes, so re-resolve it until it's enabled
+function clickWhenReady(find: () => HTMLButtonElement | null, timeoutMs = 3000) {
+  const start = performance.now()
+  const tick = () => {
+    const b = find()
+    if (isSubmittable(b)) { b.click(); return }
+    if (performance.now() - start < timeoutMs) requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick)
+}
+
+function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElement, findSubmit?: () => HTMLButtonElement | null) {
   const actionArea = submitBtn.parentElement
   if (!actionArea || actionArea.querySelector(`[${INJECTED_ATTR}]`)) return
 
@@ -78,8 +94,7 @@ function injectButton(textarea: HTMLTextAreaElement, submitBtn: HTMLButtonElemen
     textarea.dispatchEvent(new Event('input', { bubbles: true }))
     textarea.dispatchEvent(new Event('change', { bubbles: true }))
     if (legacy) submitBtn.click()
-    // Redesigned layout: let React re-render so the submit button is enabled first
-    else requestAnimationFrame(() => submitBtn.click())
+    else clickWhenReady(() => findSubmit?.() ?? submitBtn)
     if (shouldAutoUpdateBranch()) waitForUpdateBranch()
   })
 
@@ -113,16 +128,46 @@ function injectLegacy() {
 }
 
 // Redesigned layout: nearest ancestor of the textarea containing exactly one "Comment" button
+function findRedesignedSubmit(textarea: HTMLTextAreaElement): HTMLButtonElement | null {
+  let el: HTMLElement | null = textarea.parentElement
+  for (let i = 0; el && i < 10; i++, el = el.parentElement) {
+    const matches = Array.from(el.querySelectorAll('button'))
+      .filter(b => b.textContent?.trim() === 'Comment' && !b.hasAttribute(INJECTED_ATTR))
+    if (matches.length > 1) return null
+    if (matches.length === 1) return matches[0]
+  }
+  return null
+}
+
 function injectRedesigned() {
   document.querySelectorAll<HTMLTextAreaElement>(NEW_TEXTAREA).forEach((textarea) => {
     if (textarea.matches(LEGACY_TEXTAREA) || textarea.closest(LEGACY_FORM)) return
     if (textarea.closest('.js-inline-comment-form, .review-thread-reply, [data-testid*="review-thread"]')) return
-    let el: HTMLElement | null = textarea.parentElement
-    for (let i = 0; el && i < 10; i++, el = el.parentElement) {
-      const matches = Array.from(el.querySelectorAll('button')).filter(b => b.textContent?.trim() === 'Comment')
-      if (matches.length > 1) return
-      if (matches.length === 1) { injectButton(textarea, matches[0]); return }
-    }
+    const submitBtn = findRedesignedSubmit(textarea)
+    if (submitBtn) injectButton(textarea, submitBtn, () => findRedesignedSubmit(textarea))
+  })
+}
+
+// Redesigned layout: header "Submit review" button(s) (the review popover's own submit button lacks this action name)
+const HEADER_SUBMIT_REVIEW = 'button[data-dd-action-name="pull_requests.review.open"]'
+
+// Delegates to the comment-box skip button so both share the same submit + update-branch flow
+function injectHeaderButtons() {
+  document.querySelectorAll<HTMLButtonElement>(HEADER_SUBMIT_REVIEW).forEach((submitBtn) => {
+    const container = submitBtn.parentElement
+    if (!container || container.querySelector(`[${INJECTED_ATTR}="header"]`)) return
+
+    const btn = submitBtn.cloneNode(false) as HTMLButtonElement
+    ;['id', 'style', 'aria-expanded', 'aria-haspopup', 'aria-controls', 'data-dd-action-name']
+      .forEach(a => btn.removeAttribute(a))
+    btn.setAttribute('data-variant', 'default')
+    btn.type = 'button'
+    btn.textContent = SKIP_TEXT
+    btn.setAttribute(INJECTED_ATTR, 'header')
+    btn.addEventListener('click', () => {
+      document.querySelector<HTMLButtonElement>(`[${INJECTED_ATTR}="true"]:not(:disabled)`)?.click()
+    })
+    container.insertBefore(btn, submitBtn)
   })
 }
 
@@ -133,6 +178,7 @@ function tryInject() {
   }
   injectLegacy()
   injectRedesigned()
+  injectHeaderButtons()
 }
 
 loadSettings()
