@@ -160,7 +160,6 @@ function injectHeaderButtons() {
     const btn = submitBtn.cloneNode(false) as HTMLButtonElement
     ;['id', 'style', 'aria-expanded', 'aria-haspopup', 'aria-controls', 'data-dd-action-name']
       .forEach(a => btn.removeAttribute(a))
-    btn.setAttribute('data-variant', 'default')
     btn.type = 'button'
     btn.textContent = SKIP_TEXT
     btn.setAttribute(INJECTED_ATTR, 'header')
